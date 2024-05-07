@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: sse-connect
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/db
+    username: admin
+    password: admin
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db
+    password: admin
+    username: admin
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/db
+    user: admin
+    password: admin
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+
+

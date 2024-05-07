@@ -1,0 +1,11 @@
+package ru.abolsoft.sseconnect.core.port;
+
+import ru.abolsoft.sseconnect.core.entity.Badge;
+import ru.abolsoft.sseconnect.core.entity.BadgeData;
+
+import java.util.Optional;
+
+public interface CoreServicePort {
+    Optional<Badge> getBadgeForMember(Long memberId);
+    Optional<BadgeData> getBadgeDataById(Long badgeId);
+}

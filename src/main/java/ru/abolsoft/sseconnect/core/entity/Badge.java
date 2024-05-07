@@ -1,13 +1,10 @@
 package ru.abolsoft.sseconnect.core.entity;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import ru.abolsoft.sseconnect.base.entity.BaseAggregate;
 import ru.abolsoft.sseconnect.core.exception.NotImplemented;
-
-import java.util.List;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)

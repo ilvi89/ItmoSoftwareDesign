@@ -1,17 +1,19 @@
-package ru.abolsoft.sseconnect.core.entity;
+package ru.abolsoft.sseconnect.core.port.res;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import ru.abolsoft.sseconnect.base.entity.BaseEntity;
+import ru.abolsoft.sseconnect.core.entity.Badge;
+import ru.abolsoft.sseconnect.core.entity.Property;
+import ru.abolsoft.sseconnect.core.entity.Status;
 
 import java.util.List;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
-public class BadgeData extends BaseEntity<Long> {
+public class BadgeData {
+    private Long id;
     private List<Property> properties;
-
     private Long ownerId;
     private Long deskId;
     private Status status;

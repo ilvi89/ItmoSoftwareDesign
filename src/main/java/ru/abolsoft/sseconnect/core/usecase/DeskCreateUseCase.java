@@ -9,7 +9,7 @@ import ru.abolsoft.sseconnect.core.repository.DeskRepository;
 
 @Service
 @RequiredArgsConstructor
-public class CreateDeskUseCase {
+public class DeskCreateUseCase {
     private final DeskRepository deskRepository;
 
     public Res execute(Req req) {

@@ -9,7 +9,7 @@ import ru.abolsoft.sseconnect.core.repository.DeskRepository;
 
 @Service
 @RequiredArgsConstructor
-public class MobileConnectToggleDeskUseCase {
+public class DeskMobileConnectUseCase {
     private final DeskRepository deskRepository;
 
     public Res execute(Req req) {

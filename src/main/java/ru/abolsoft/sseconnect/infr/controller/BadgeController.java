@@ -31,9 +31,7 @@ public class BadgeController {
                 .memberId(req.getMemberId())
                 .build();
         BadgePrepareUseCase.Res res = badgePrepareUseCase.execute(useCaseReq);
-        var emmiter = deskRepository.findMappedObject(res.getDeskId()).orElseThrow(NotImplemented::new);
-
-
+        var emitter = deskRepository.findMappedObject(res.getDeskId()).orElseThrow(NotImplemented::new);
         var dataToSend = new HashMap<String, Object>();
         var eventData = BadgeStatusResponse.builder()
                 .id(res.getBadgeId())
@@ -41,11 +39,11 @@ public class BadgeController {
                 .build();
         dataToSend.put("desk", eventData);
         var event = SseEmitter.event()
-                .name("dossier_accepted_event")
+                .name("dossier_in_process_event")
                 .data(dataToSend)
                 .build();
         try {
-            emmiter.send(event);
+            emitter.send(event);
         } catch (IOException e) {
             throw new NotImplemented();
         }
@@ -66,6 +64,26 @@ public class BadgeController {
                 .build();
         var res = badgeAcceptUseCase.execute(useCaseReq);
         var data = res.getBadgeData();
+
+        var emitter = deskRepository.findMappedObject(res.getBadgeData().getDeskId())
+                .orElseThrow(NotImplemented::new);
+        var dataToSend = new HashMap<String, Object>();
+        var eventData = BadgeStatusResponse.builder()
+                .id(res.getBadgeData().getId())
+                .status(res.getBadgeData().getStatus())
+                .build();
+        dataToSend.put("desk", eventData);
+        var event = SseEmitter.event()
+                .name("dossier_accepted_event")
+                .data(dataToSend)
+                .build();
+        try {
+            emitter.send(event);
+        } catch (IOException e) {
+            throw new NotImplemented();
+        }
+
+
         return ResponseEntity.ok(AcceptBadgeResponse.builder()
                 .badge(data)
                 .build()

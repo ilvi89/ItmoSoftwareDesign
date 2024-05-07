@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import ru.abolsoft.sseconnect.core.entity.Desk;
 import ru.abolsoft.sseconnect.core.exception.NotImplemented;
-import ru.abolsoft.sseconnect.core.usecase.CreateDeskUseCase;
-import ru.abolsoft.sseconnect.core.usecase.MobileConnectToggleDeskUseCase;
+import ru.abolsoft.sseconnect.core.usecase.DeskCreateUseCase;
+import ru.abolsoft.sseconnect.core.usecase.DeskMobileConnectUseCase;
 import ru.abolsoft.sseconnect.infr.controller.req.CreateDeskRequest;
 import ru.abolsoft.sseconnect.infr.controller.res.DeskResponse;
 import ru.abolsoft.sseconnect.infr.repository.DeskRepositoryImpl;
@@ -23,15 +23,15 @@ import java.util.Optional;
 @RequestMapping("desk/connect")
 public class DeskConnectionController {
     private final DeskRepositoryImpl<SseEmitter> deskRepository;
-    private final CreateDeskUseCase createDeskUseCase;
-    private final MobileConnectToggleDeskUseCase mobileConnectToggleDeskUseCase;
+    private final DeskCreateUseCase deskCreateUseCase;
+    private final DeskMobileConnectUseCase deskMobileConnectUseCase;
     private final ObjectMapper objectMapper;
 
 
     @PostMapping
     public ResponseEntity<?> createDesk(@RequestBody CreateDeskRequest req) {
-        CreateDeskUseCase.Res res = createDeskUseCase
-                .execute(CreateDeskUseCase.Req.builder().name(req.getName()).build());
+        DeskCreateUseCase.Res res = deskCreateUseCase
+                .execute(DeskCreateUseCase.Req.builder().name(req.getName()).build());
         return ResponseEntity.ok(res);
     }
 
@@ -78,11 +78,11 @@ public class DeskConnectionController {
 
     @PostMapping("/{deskId}")
     public void sendMobileStatus(@PathVariable Long deskId, @RequestParam Boolean active) {
-        var req = MobileConnectToggleDeskUseCase.Req.builder()
+        var req = DeskMobileConnectUseCase.Req.builder()
                 .deskId(deskId)
                 .mobileIsActive(active)
                 .build();
-        var res = mobileConnectToggleDeskUseCase.execute(req);
+        var res = deskMobileConnectUseCase.execute(req);
 
         // TODO: refactor me !!!
         Optional<Map.Entry<Desk, Optional<SseEmitter>>> mapping = deskRepository.findMapping(res.getDeskId());

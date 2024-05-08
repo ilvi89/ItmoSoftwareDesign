@@ -49,7 +49,7 @@ public class DeskRepositoryImpl<T> implements DeskRepository {
     }
 
     public Optional<T> findMappedObject(Long id) {
-        var o = findDesk(id);
+        var o = findById(id);
         if (o.isEmpty())
             return Optional.empty();
         Desk desk = o.get();
@@ -62,15 +62,14 @@ public class DeskRepositoryImpl<T> implements DeskRepository {
     }
 
     public void put(Long deskId, T t) {
-        var o = findDesk(deskId);
+        var o = findById(deskId);
         if (o.isEmpty())
             throw new NotImplemented();
         map.put(o.get(), Optional.of(t));
     }
 
     public void removeObject(Long deskId) {
-        log.warn("removeObject");
-        var o = findDesk(deskId);
+        var o = findById(deskId);
         if (o.isEmpty())
             throw new NotImplemented();
         map.put(o.get(), Optional.empty());

@@ -1,13 +1,11 @@
 package ru.abolsoft.sseconnect.infr.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import ru.abolsoft.sseconnect.core.exception.DomainException;
 import ru.abolsoft.sseconnect.core.exception.NotImplemented;
-import ru.abolsoft.sseconnect.core.qeuery.GetPreparedBadgeDataQuery;
+import ru.abolsoft.sseconnect.core.query.GetPreparedBadgeDataQuery;
 import ru.abolsoft.sseconnect.core.usecase.BadgeAcceptUseCase;
 import ru.abolsoft.sseconnect.core.usecase.BadgePrepareUseCase;
 import ru.abolsoft.sseconnect.infr.controller.req.PrepareBadgeRequest;

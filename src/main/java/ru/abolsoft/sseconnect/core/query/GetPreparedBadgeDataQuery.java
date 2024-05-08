@@ -1,4 +1,4 @@
-package ru.abolsoft.sseconnect.core.qeuery;
+package ru.abolsoft.sseconnect.core.query;
 
 import lombok.Builder;
 import lombok.Data;

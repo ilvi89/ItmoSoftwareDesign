@@ -15,7 +15,7 @@ public class DeskCreateUseCase {
     public Res execute(Req req) {
         var desk = Desk.create(req.name);
         desk = deskRepository.save(desk);
-        return new Res(desk.getId());
+        return new Res(desk.getId(), desk.getName(), desk.getMobile());
     }
 
 
@@ -29,6 +29,8 @@ public class DeskCreateUseCase {
     @Builder
     public static class Res {
         private Long deskId;
+        private String name;
+        private boolean mobileConnect;
     }
 }
 

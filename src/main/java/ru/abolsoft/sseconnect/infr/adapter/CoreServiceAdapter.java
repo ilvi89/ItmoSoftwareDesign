@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import ru.abolsoft.sseconnect.base.entity.Language;
 import ru.abolsoft.sseconnect.base.entity.LocalizedName;
 import ru.abolsoft.sseconnect.core.entity.Badge;
-import ru.abolsoft.sseconnect.core.port.res.BadgeData;
-import ru.abolsoft.sseconnect.core.entity.Property;
-import ru.abolsoft.sseconnect.core.entity.PropertyType;
 import ru.abolsoft.sseconnect.core.port.CoreServicePort;
+import ru.abolsoft.sseconnect.core.port.res.BadgeData;
+import ru.abolsoft.sseconnect.core.port.res.Property;
+import ru.abolsoft.sseconnect.core.port.res.PropertyType;
 
 import java.util.ArrayList;
 import java.util.HashMap;

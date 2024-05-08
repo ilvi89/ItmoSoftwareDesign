@@ -3,8 +3,6 @@ package ru.abolsoft.sseconnect.core.port.res;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import ru.abolsoft.sseconnect.core.entity.Badge;
-import ru.abolsoft.sseconnect.core.entity.Property;
 
 import java.util.List;
 

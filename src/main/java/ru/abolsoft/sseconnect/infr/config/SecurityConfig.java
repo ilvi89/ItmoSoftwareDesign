@@ -35,10 +35,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf((AbstractHttpConfigurer::disable))
-                .cors(Customizer.withDefaults())
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/desk/connect/**").permitAll()
-                        .anyRequest().permitAll());
+
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+//                        .requestMatchers("/api/swagger").permitAll()
+
+                        .anyRequest().permitAll()
+                );
         return http.build();
     }
 
@@ -49,3 +54,5 @@ public class SecurityConfig {
     }
 
 }
+
+

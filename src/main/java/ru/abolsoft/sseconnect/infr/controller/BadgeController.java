@@ -1,9 +1,11 @@
 package ru.abolsoft.sseconnect.infr.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import ru.abolsoft.sseconnect.core.exception.DomainException;
 import ru.abolsoft.sseconnect.core.exception.NotImplemented;
 import ru.abolsoft.sseconnect.core.qeuery.GetPreparedBadgeDataQuery;
 import ru.abolsoft.sseconnect.core.usecase.BadgeAcceptUseCase;
@@ -53,8 +55,8 @@ public class BadgeController {
         return ResponseEntity.ok(badgeResponse);
     }
 
-    @GetMapping
-    public ResponseEntity<BadgeDataResponse> getPreparedBadge(@RequestParam(name = "badge_id") final Long badgeId) {
+    @GetMapping("/{id}/data")
+    public ResponseEntity<BadgeDataResponse> getPreparedBadge(@PathVariable("id") final Long badgeId) {
         var useCaseReq = GetPreparedBadgeDataQuery.Req.builder()
                 .badgeId(badgeId)
                 .build();
@@ -69,8 +71,8 @@ public class BadgeController {
     }
 
 
-    @GetMapping
-    public ResponseEntity<?> acceptPrepare(@RequestParam(name = "badge_id") final Long badgeId) {
+    @PostMapping("/{id}")
+    public ResponseEntity<?> acceptPrepare(@PathVariable("id") final Long badgeId) {
         var useCaseReq = BadgeAcceptUseCase.Req.builder()
                 .badgeId(badgeId)
                 .build();
@@ -99,3 +101,5 @@ public class BadgeController {
         return ResponseEntity.ok(badgeResponse);
     }
 }
+
+

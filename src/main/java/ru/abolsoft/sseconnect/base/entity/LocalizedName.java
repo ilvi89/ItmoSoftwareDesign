@@ -1,5 +1,6 @@
 package ru.abolsoft.sseconnect.base.entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 

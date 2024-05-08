@@ -1,4 +1,4 @@
-package ru.abolsoft.sseconnect.core.entity;
+package ru.abolsoft.sseconnect.core.port.res;
 
 import lombok.Getter;
 

@@ -22,11 +22,6 @@ public class Property implements ValueObject {
     public static Property create(String alias, PropertyType type, LocalizedName name, String defaultValue, String value) {
         return new Property(alias, type, name, defaultValue, value);
     }
-
-
-    public boolean hasValue() {
-        throw new RuntimeException("Not implemented");
-    }
 }
 
 

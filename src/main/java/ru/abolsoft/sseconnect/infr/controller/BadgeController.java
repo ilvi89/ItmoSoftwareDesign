@@ -33,7 +33,8 @@ public class BadgeController {
                 .memberId(req.getMemberId())
                 .build();
         BadgePrepareUseCase.Res res = badgePrepareUseCase.execute(useCaseReq);
-        var emitter = deskRepository.findMappedObject(res.getDeskId()).orElseThrow(NotImplemented::new);
+        var emitter = deskRepository.findMappedObject(res.getDeskId())
+                .orElseThrow(NotImplemented::new);
         var badgeResponse = BadgeResponse.builder()
                 .id(res.getBadgeId())
                 .status(res.getStatus())

@@ -30,7 +30,7 @@ public class CoreServiceAdapter implements CoreServicePort {
         var nameValue = "Ilya";
         var props = new ArrayList<Property>();
         props.add(Property.create("name", PropertyType.STRING, LocalizedName.of(namePropsName), defaultNameValue, nameValue));
-        var data = BadgeData.create(badgeId, props);
+        var data = BadgeData.create(props);
         return Optional.of(data);
     }
 }

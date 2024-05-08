@@ -17,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 public class DeskRepositoryImpl<T> implements DeskRepository {
     private final DeskRepositoryJpa deskRepositoryJpa;
-    private final Map<Desk, Optional<T>> map = new HashMap<>();
+    private final Map<Long, Optional<T>> map = new HashMap<>();
 
 
     @Override
@@ -27,7 +27,6 @@ public class DeskRepositoryImpl<T> implements DeskRepository {
 
         if (desk.isEmpty())
             throw new NotImplemented();
-        map.putIfAbsent(desk.get(), Optional.empty());
         return desk;
     }
 
@@ -35,17 +34,7 @@ public class DeskRepositoryImpl<T> implements DeskRepository {
     public Desk save(Desk entity) {
         DeskModel deskModel = convertToDeskModel(entity);
         deskModel = deskRepositoryJpa.save(deskModel);
-
-        var saved = this.findMapping(deskModel.getId());
-        if (saved.isPresent() && saved.get().getKey().equals(entity)) {
-            Optional<T> obj = saved.get().getValue();
-            map.remove(entity);
-            map.put(entity, obj);
-            return entity;
-        }
-        entity.setId(deskModel.getId());
-        map.put(entity, Optional.empty());
-        return entity;
+        return convertToDesk(deskModel);
     }
 
     public Optional<T> findMappedObject(Long id) {
@@ -57,28 +46,18 @@ public class DeskRepositoryImpl<T> implements DeskRepository {
         return t;
     }
 
-    private Optional<Desk> findDesk(Long id) {
-        return findById(id);
-    }
-
-    public void put(Long deskId, T t) {
-        var o = findById(deskId);
-        if (o.isEmpty())
-            throw new NotImplemented();
-        map.put(o.get(), Optional.of(t));
+    public void putObject(Long deskId, T t) {
+        map.put(deskId, Optional.of(t));
     }
 
     public void removeObject(Long deskId) {
-        var o = findById(deskId);
-        if (o.isEmpty())
-            throw new NotImplemented();
-        map.put(o.get(), Optional.empty());
+        map.put(deskId, Optional.empty());
     }
 
-    public Optional<Map.Entry<Desk, Optional<T>>> findMapping(Long deskId) {
+    public Optional<Map.Entry<Long, Optional<T>>> findMapping(Long deskId) {
         var desk = findById(deskId);
         if (desk.isEmpty()) return Optional.empty();
-        return map.entrySet().stream().filter(deskOptionalEntry -> deskOptionalEntry.getKey().getId().equals(deskId)).findFirst();
+        return map.entrySet().stream().filter(deskOptionalEntry -> deskOptionalEntry.getKey().equals(deskId)).findFirst();
     }
 
     private Desk convertToDesk(DeskModel deskModel) {

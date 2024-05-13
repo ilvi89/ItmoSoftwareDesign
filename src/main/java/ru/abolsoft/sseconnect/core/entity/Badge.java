@@ -6,25 +6,29 @@ import lombok.Setter;
 import ru.abolsoft.sseconnect.base.entity.BaseAggregate;
 import ru.abolsoft.sseconnect.core.exception.NotImplemented;
 
+import java.util.UUID;
+
 @Getter
-@Setter(AccessLevel.PROTECTED)
-public class Badge extends BaseAggregate<Long> {
+@Setter
+public class Badge extends BaseAggregate<UUID> {
+    private Long customObjectId;
     private Long ownerId;
     private Desk desk;
     private Status status;
 
 
-    public static Badge create(Long id, Long ownerId) {
+    public static Badge create(UUID id, Long customObjectId, Long ownerId) {
         var b = new Badge();
         b.setId(id);
+        b.setCustomObjectId(customObjectId);
         b.setOwnerId(ownerId);
         b.setStatus(Status.NEW);
         b.setDesk(null); //TODO: default object (static obgect Desk.Default) with check
         return b;
     }
 
-    public static Badge of(Long id, Long ownerId, Desk desk, Status status) {
-        var b = Badge.create(id, ownerId);
+    public static Badge of(UUID id, Long customObjectId, Long ownerId, Desk desk, Status status) {
+        var b = Badge.create(id, customObjectId, ownerId);
         b.setDesk(desk);
         b.setStatus(status);
         return b;
@@ -57,4 +61,6 @@ public class Badge extends BaseAggregate<Long> {
 
     }
 }
+
+
 

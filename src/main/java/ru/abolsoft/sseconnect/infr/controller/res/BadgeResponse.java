@@ -6,11 +6,13 @@ import lombok.Data;
 import ru.abolsoft.sseconnect.core.entity.Status;
 import ru.abolsoft.sseconnect.core.port.res.BadgeData;
 
+import java.util.UUID;
+
 @Data
 @Builder
 public class BadgeResponse {
     @Schema(description = "Id бейджа")
-    private Long id;
+    private UUID id;
     @Schema(description = "Статус бейджа")
     private Status status;
     @Schema(description = "Id стойки")

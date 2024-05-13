@@ -31,9 +31,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: custom_object_id
+                  type: BIGINT
+                  constraints:
                     nullable: false
               - column:
                   name: status
@@ -48,7 +53,46 @@ databaseChangeLog:
               - column:
                   name: member_id
                   type: BIGINT
+        - createTable:
+            tableName: badge_preset
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: alias
+                  type: VARCHAR(255)
+        - createTable:
+            tableName: badge_preset_properties
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  autoIncrement: true
+              - column:
+                  name: badge_preset_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: property_key
+                  type: VARCHAR(255)
+              - column:
+                  name: property_value
+                  type: VARCHAR(255)
 
+        - addForeignKeyConstraint:
+            baseTableName: badge_preset_properties
+            baseColumnNames: badge_preset_id
+            referencedTableName: badge_preset
+            referencedColumnNames: id
+            constraintName: badge_preset_properties
         - addForeignKeyConstraint:
             baseTableName: badges
             baseColumnNames: desk_id

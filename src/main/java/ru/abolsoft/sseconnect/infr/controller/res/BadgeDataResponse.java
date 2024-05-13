@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import ru.abolsoft.sseconnect.core.port.res.BadgeData;
 
+import java.util.UUID;
+
 @Data
 @Builder
 public class BadgeDataResponse {
     @Schema(description = "Id бейджа")
-    private Long id;
+    private UUID id;
     @Schema(description = "Динамические поля бейджа")
     private BadgeData data;
 }

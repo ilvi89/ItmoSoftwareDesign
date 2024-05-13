@@ -8,9 +8,10 @@ import ru.abolsoft.sseconnect.core.entity.Status;
 import ru.abolsoft.sseconnect.infr.repository.model.BadgeModel;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface BadgeRepositoryJpa extends JpaRepository<BadgeModel, Long> {
+public interface BadgeRepositoryJpa extends JpaRepository<BadgeModel, UUID> {
     @Query(value = "select b.status from BadgeModel b where b.id = :id")
-    Optional<Status> findStatusById(@Param("id") Long badgeId);
+    Optional<Status> findStatusById(@Param("id") UUID badgeId);
 }

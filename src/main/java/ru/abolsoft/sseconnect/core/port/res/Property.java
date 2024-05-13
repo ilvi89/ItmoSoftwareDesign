@@ -12,15 +12,19 @@ import ru.abolsoft.sseconnect.base.entity.ValueObject;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class Property implements ValueObject {
     private final String alias;
-    private final PropertyType type;
+//    private final PropertyType type;
 
-    private final LocalizedName name;
-    private final String defaultValue;
+//    private final LocalizedName name;
+//    private final String defaultValue;
     private final String value;
 
 
-    public static Property create(String alias, PropertyType type, LocalizedName name, String defaultValue, String value) {
-        return new Property(alias, type, name, defaultValue, value);
+//    public static Property create(String alias, PropertyType type, LocalizedName name, String defaultValue, String value) {
+//        return new Property(alias, type, name, defaultValue, value);
+//    }
+
+    public static Property create(String alias, String value) {
+        return new Property(alias, value);
     }
 }
 

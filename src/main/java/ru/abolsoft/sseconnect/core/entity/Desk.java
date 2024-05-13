@@ -4,7 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import ru.abolsoft.sseconnect.base.entity.BaseEntity;
+import ru.abolsoft.sseconnect.infr.repository.model.DeskModel;
 
 @Getter
 @AllArgsConstructor
@@ -25,3 +29,6 @@ public class Desk extends BaseEntity<Long> {
     }
 
 }
+
+
+

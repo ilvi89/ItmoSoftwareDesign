@@ -8,6 +8,8 @@ import ru.abolsoft.sseconnect.core.entity.Status;
 import ru.abolsoft.sseconnect.core.exception.NotImplemented;
 import ru.abolsoft.sseconnect.core.repository.BadgeRepository;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class BadgeAcceptUseCase {
@@ -26,13 +28,13 @@ public class BadgeAcceptUseCase {
     @Data
     @Builder
     public static class Req {
-        private Long badgeId;
+        private UUID badgeId;
     }
 
     @Data
     @Builder
     public static class Res {
-        private Long badgeId;
+        private UUID badgeId;
         private Long deskId;
         private Status status;
     }

@@ -3,15 +3,17 @@ package ru.abolsoft.sseconnect.infr.repository.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "desks")
 @Builder
 @Entity
+@Table(name = "desks")
 public class DeskModel {
     @Id
     @GeneratedValue(generator = "desks_id_seq")
@@ -22,3 +24,5 @@ public class DeskModel {
     @Column(name = "mobile_connection")
     private Boolean mobile;
 }
+
+

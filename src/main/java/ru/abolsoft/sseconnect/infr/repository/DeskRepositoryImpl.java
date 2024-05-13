@@ -42,7 +42,7 @@ public class DeskRepositoryImpl<T> implements DeskRepository {
         if (o.isEmpty())
             return Optional.empty();
         Desk desk = o.get();
-        Optional<T> t = map.get(desk);
+        Optional<T> t = map.getOrDefault(desk.getId(), Optional.empty());
         return t;
     }
 

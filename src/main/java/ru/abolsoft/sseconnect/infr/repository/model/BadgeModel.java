@@ -5,6 +5,8 @@ import lombok.*;
 import org.springframework.data.domain.Persistable;
 import ru.abolsoft.sseconnect.core.entity.Status;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,9 +14,12 @@ import ru.abolsoft.sseconnect.core.entity.Status;
 @Table(name = "badges")
 @Builder
 @Entity
-public class BadgeModel implements Persistable<Long> {
+public class BadgeModel implements Persistable<UUID> {
     @Id
-    private Long id;
+    private UUID id;
+
+    @Column(name = "custom_object_id")
+    private Long customObjectId;
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -23,7 +28,7 @@ public class BadgeModel implements Persistable<Long> {
     @Column(name = "member_id")
     private Long memberId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "desk_id", referencedColumnName = "id")
     private DeskModel desk;
 

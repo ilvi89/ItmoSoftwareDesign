@@ -6,10 +6,11 @@ import ru.abolsoft.sseconnect.core.entity.Status;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
-public interface BadgeRepository extends BaseRepository<Badge, Long> {
+public interface BadgeRepository extends BaseRepository<Badge, UUID> {
 
-    Optional<Status> findStatusById(Long badgeId);
+    Optional<Status> findStatusById(UUID id);
 }
 
 

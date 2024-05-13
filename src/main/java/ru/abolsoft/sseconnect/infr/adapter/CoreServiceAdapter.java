@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.uuid.UuidCreator;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.RetryRegistry;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.*;
 import okhttp3.*;
 import org.apache.logging.log4j.util.Strings;
@@ -16,7 +19,6 @@ import ru.abolsoft.sseconnect.core.port.CoreServicePort;
 import ru.abolsoft.sseconnect.core.port.res.BadgeData;
 import ru.abolsoft.sseconnect.core.port.res.Property;
 import ru.abolsoft.sseconnect.infr.adapter.utils.retry.RetryHandler;
-import ru.abolsoft.sseconnect.infr.adapter.utils.retry.RetryWithBackoff;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +40,8 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
     private final ObjectMapper objectMapper;
 
     @Override
-    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
+//    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
+    @Retry(name = "coreRetry", fallbackMethod = "login")
     public Optional<Badge> getBadgeForMember(Long memberId, BadgePreset badgePreset) {
 
         var filterParams = badgePreset
@@ -103,11 +106,11 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
     }
 
     @Override
-    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
+//    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
+    @Retry(name = "coreRetry", fallbackMethod = "login")
     public Optional<BadgeData> getBadgeDataById(Long badgeId) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
-        MediaType mediaType = MediaType.parse("text/plain");
         Request request = new Request.Builder()
                 .url("http://158.160.165.207:8080/api/core/entity/mkf/" + badgeId)
                 .get()
@@ -134,6 +137,7 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
     }
 
 
+    @CircuitBreaker(name = "coreCircuitBreaker")
     private void login() {
         var loginRes = UserCredentialsDTO.builder()
                 .username(superuserUsername)

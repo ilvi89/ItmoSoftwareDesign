@@ -28,6 +28,33 @@ spring:
     host: localhost
     port: 6379
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      myCircuitBreakerConfig:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        slowCallRateThreshold: 100
+        slowCallDurationThreshold: 2s
+    instances:
+      coreCircuitBreaker:
+        baseConfig: myCircuitBreakerConfig
+  retry:
+    instances:
+      coreRetry:
+        max-attempts: 5
+        waitDuration: 2s
+        exponential-max-wait-duration:
+          seconds: 5
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retryExceptions:
+          - java.lang.Exception
+
 
 springdoc:
   swagger-ui:

@@ -14,4 +14,7 @@ import java.util.UUID;
 public interface BadgeRepositoryJpa extends JpaRepository<BadgeModel, UUID> {
     @Query(value = "select b.status from BadgeModel b where b.id = :id")
     Optional<Status> findStatusById(@Param("id") UUID badgeId);
+
+    @Query(value = "select count(*) > 0 from BadgeModel b join b.desk d where d.id = :dId and b.status = :status")
+    boolean existsByDeskIdAndStatus(@Param("dId") Long deskId, @Param("status") Status status);
 }

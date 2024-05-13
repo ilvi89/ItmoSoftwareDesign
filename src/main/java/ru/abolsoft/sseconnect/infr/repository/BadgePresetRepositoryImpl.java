@@ -1,6 +1,7 @@
 package ru.abolsoft.sseconnect.infr.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import ru.abolsoft.sseconnect.core.entity.BadgePreset;
 import ru.abolsoft.sseconnect.core.repository.BadgePresetRepository;
@@ -17,6 +18,7 @@ public class BadgePresetRepositoryImpl implements BadgePresetRepository {
     private final BadgePresetMapper badgePresetMapper;
 
     @Override
+    @Cacheable(value = "badgePresets", key = "#id")
     public Optional<BadgePreset> findById(UUID id) {
         Optional<BadgePresetModel> model = badgePresetRepository.findById(id);
         return model.map(badgePresetMapper::toEntity);
@@ -28,6 +30,4 @@ public class BadgePresetRepositoryImpl implements BadgePresetRepository {
         model = badgePresetRepository.save(model);
         return badgePresetMapper.toEntity(model);
     }
-
 }
-

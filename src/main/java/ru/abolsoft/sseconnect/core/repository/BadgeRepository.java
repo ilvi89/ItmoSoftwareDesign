@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface BadgeRepository extends BaseRepository<Badge, UUID> {
 
     Optional<Status> findStatusById(UUID id);
+
+    boolean existByDeskIdAndStatus(Long deskId, Status status);
 }
 
 

@@ -2,7 +2,6 @@ package ru.abolsoft.sseconnect.infr.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,11 +37,11 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
 
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/error").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
+                                .requestMatchers("/error").permitAll()
 //                        .requestMatchers("/api/swagger").permitAll()
 
-                        .anyRequest().permitAll()
+                                .anyRequest().permitAll()
                 );
         return http.build();
     }

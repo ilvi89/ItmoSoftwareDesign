@@ -30,6 +30,11 @@ public class BadgePrepareUseCase {
     @Transactional(rollbackFor = Exception.class)
     public Res execute(Req req) {
 
+        boolean badgesInProcessExist = badgeRepository.existByDeskIdAndStatus(req.deskId, Status.IN_PROCESS);
+        if (badgesInProcessExist) {
+            throw new NotImplemented();
+        }
+
         Optional<BadgePreset> optionalPreset = badgePresetRepository.findById(req.presetId);
         if (optionalPreset.isEmpty())
             throw new NotImplemented();

@@ -28,6 +28,11 @@ public class BadgeRepositoryImpl implements BadgeRepository {
     }
 
     @Override
+    public boolean existByDeskIdAndStatus(Long deskId, Status status) {
+        return badgeRepositoryJpa.existsByDeskIdAndStatus(deskId, status);
+    }
+
+    @Override
     public Optional<Badge> findById(UUID id) {
         return badgeRepositoryJpa.findById(id).map(badgeMapper::toEntity);
     }

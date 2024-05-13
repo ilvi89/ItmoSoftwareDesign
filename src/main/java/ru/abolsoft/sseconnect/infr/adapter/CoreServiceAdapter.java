@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.uuid.UuidCreator;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import okhttp3.*;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.abolsoft.sseconnect.core.entity.Badge;
 import ru.abolsoft.sseconnect.core.entity.BadgePreset;
@@ -15,6 +15,8 @@ import ru.abolsoft.sseconnect.core.exception.NotImplemented;
 import ru.abolsoft.sseconnect.core.port.CoreServicePort;
 import ru.abolsoft.sseconnect.core.port.res.BadgeData;
 import ru.abolsoft.sseconnect.core.port.res.Property;
+import ru.abolsoft.sseconnect.infr.adapter.utils.retry.RetryHandler;
+import ru.abolsoft.sseconnect.infr.adapter.utils.retry.RetryWithBackoff;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,11 +26,19 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CoreServiceAdapter implements CoreServicePort {
+public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
+    @Value("${app.core.superuser.username}")
+    private String superuserUsername;
+    @Value("${app.core.superuser.password}")
+    private String superuserPassword;
+
+    @Setter(AccessLevel.PROTECTED)
+    private String superuserToken = Strings.EMPTY;
+
     private final ObjectMapper objectMapper;
-    private final String serviceAccountToken = "ekit-access=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcxNTYwODA2OCwiZXhwIjoxNzE1NjExNjY4fQ.6batpSu84T8BY8Z-9LKUHraHkgaHoDEn2AJSBUrx6CUBgWvPUHAVlXoWgYkvZKhz8fijx5MNFmjCDHHrDXh5zA; Path=/api/core; Max-Age=3600; Expires=Mon, 13 May 2024 14:47:48 GMT; HttpOnly";
 
     @Override
+    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
     public Optional<Badge> getBadgeForMember(Long memberId, BadgePreset badgePreset) {
 
         var filterParams = badgePreset
@@ -60,12 +70,18 @@ public class CoreServiceAdapter implements CoreServicePort {
                 .url("http://158.160.165.207:8080/api/core/entity/mkf/list?type=" + badgePreset.getAlias() + "&page=0&size=10")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Cookie", serviceAccountToken)
+                .addHeader("Cookie", superuserToken)
                 .build();
 
         ObjectsResponseDTO objectsResponse = ObjectsResponseDTO.builder().build();
         try {
             Response response = client.newCall(request).execute();
+
+            if (!response.isSuccessful()) {
+                this.login();
+                throw new NotImplemented();
+            }
+
             var responseBody = Objects.requireNonNull(response.body()).string();
             objectsResponse = objectMapper.readValue(responseBody, ObjectsResponseDTO.class);
             var filteredObjects = objectsResponse.getEntities().stream().filter(objectDTO -> objectDTO.getParent() == memberId).toList();
@@ -87,6 +103,7 @@ public class CoreServiceAdapter implements CoreServicePort {
     }
 
     @Override
+    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
     public Optional<BadgeData> getBadgeDataById(Long badgeId) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -94,7 +111,7 @@ public class CoreServiceAdapter implements CoreServicePort {
         Request request = new Request.Builder()
                 .url("http://158.160.165.207:8080/api/core/entity/mkf/" + badgeId)
                 .get()
-                .addHeader("Cookie", serviceAccountToken)
+                .addHeader("Cookie", superuserToken)
                 .build();
         try {
             Response response = client.newCall(request).execute();
@@ -115,7 +132,62 @@ public class CoreServiceAdapter implements CoreServicePort {
             throw new NotImplemented();
         }
     }
+
+
+    private void login() {
+        var loginRes = UserCredentialsDTO.builder()
+                .username(superuserUsername)
+                .password(superuserPassword)
+                .build();
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        String loginResJson;
+        try {
+            loginResJson = objectMapper.writeValueAsString(loginRes);
+        } catch (JsonProcessingException e) {
+            throw new NotImplemented();
+        }
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(loginResJson, mediaType);
+        Request request = new Request.Builder()
+                .url("http://158.160.165.207:8080/api/core/auth/login")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            var token = response.headers("Set-Cookie");
+            var accessToken = token.stream().filter(string -> string.contains("ekit-access")).findFirst().get();
+            this.setSuperuserToken(accessToken);
+            response.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void executeAfterFirstRetry() {
+        this.login();
+    }
+
+    @Override
+    public void executeBeforeRetry() {
+
+    }
+
+    @Override
+    public void executeAfterRetry() {
+
+    }
 }
+
+@Data
+@Builder
+class UserCredentialsDTO {
+    private String username;
+    private String password;
+}
+
 
 @Data
 @Builder

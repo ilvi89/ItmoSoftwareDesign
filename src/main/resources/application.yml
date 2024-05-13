@@ -34,4 +34,10 @@ springdoc:
     path: /api-docs
     enabled: true
 
+app:
+  core:
+    superuser:
+      username: admin
+      password: qwerty123
+
 

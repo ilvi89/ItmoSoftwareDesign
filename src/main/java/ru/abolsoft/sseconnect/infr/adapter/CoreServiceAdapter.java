@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.uuid.UuidCreator;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.RetryRegistry;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.*;
 import okhttp3.*;
@@ -14,11 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.abolsoft.sseconnect.core.entity.Badge;
 import ru.abolsoft.sseconnect.core.entity.BadgePreset;
+import ru.abolsoft.sseconnect.core.exception.DomainException;
 import ru.abolsoft.sseconnect.core.exception.NotImplemented;
 import ru.abolsoft.sseconnect.core.port.CoreServicePort;
 import ru.abolsoft.sseconnect.core.port.res.BadgeData;
 import ru.abolsoft.sseconnect.core.port.res.Property;
-import ru.abolsoft.sseconnect.infr.adapter.utils.retry.RetryHandler;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
+public class CoreServiceAdapter implements CoreServicePort {
     @Value("${app.core.superuser.username}")
     private String superuserUsername;
     @Value("${app.core.superuser.password}")
@@ -40,9 +39,8 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
     private final ObjectMapper objectMapper;
 
     @Override
-//    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
-    @Retry(name = "coreRetry", fallbackMethod = "login")
-    public Optional<Badge> getBadgeForMember(Long memberId, BadgePreset badgePreset) {
+    @Retry(name = "coreRetry")
+    public Optional<Badge> getBadgeForMember(Long memberId, BadgePreset badgePreset) throws DomainException {
 
         var filterParams = badgePreset
                 .getProperties().entrySet()
@@ -82,7 +80,7 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
 
             if (!response.isSuccessful()) {
                 this.login();
-                throw new NotImplemented();
+                throw new DomainException("Request failed");
             }
 
             var responseBody = Objects.requireNonNull(response.body()).string();
@@ -98,16 +96,15 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
             var object = objectsResponse.getEntities().get(0);
             var badge = Badge.create(UuidCreator.getTimeBased(), (long) object.getId(), (long) object.getParent());
             return Optional.of(badge);
-        } catch (IOException e) {
-            throw new NotImplemented();
+        } catch (Exception e) {
+            throw new DomainException("Request failed");
         }
 
 
     }
 
     @Override
-//    @RetryWithBackoff(maxAttempts = 5, delay = 1000, multiplier = 2)
-    @Retry(name = "coreRetry", fallbackMethod = "login")
+    @Retry(name = "coreRetry")
     public Optional<BadgeData> getBadgeDataById(Long badgeId) {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -120,6 +117,10 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
             Response response = client.newCall(request).execute();
             var responseBody = Objects.requireNonNull(response.body()).string();
             var object = objectMapper.readValue(responseBody, ObjectDTO.class);
+            if (!response.isSuccessful()) {
+                this.login();
+                throw new NotImplemented();
+            }
             response.close();
 
             var props = object.getValues()
@@ -137,7 +138,7 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
     }
 
 
-    @CircuitBreaker(name = "coreCircuitBreaker")
+//    @CircuitBreaker(name = "coreCircuitBreaker")
     private void login() {
         var loginRes = UserCredentialsDTO.builder()
                 .username(superuserUsername)
@@ -167,21 +168,6 @@ public class CoreServiceAdapter implements CoreServicePort, RetryHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void executeAfterFirstRetry() {
-        this.login();
-    }
-
-    @Override
-    public void executeBeforeRetry() {
-
-    }
-
-    @Override
-    public void executeAfterRetry() {
-
     }
 }
 

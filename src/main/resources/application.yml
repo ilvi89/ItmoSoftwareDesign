@@ -47,13 +47,14 @@ resilience4j:
     instances:
       coreRetry:
         max-attempts: 5
-        waitDuration: 2s
-        exponential-max-wait-duration:
-          seconds: 5
+        waitDuration: 1s
         enable-exponential-backoff: true
         exponential-backoff-multiplier: 2
-        retryExceptions:
-          - java.lang.Exception
+        retry-exceptions:
+          - ru.abolsoft.sseconnect.core.exception.DomainException
+          - java.lang.Throwable
+    metrics:
+      enabled: true
 
 
 springdoc:
@@ -70,5 +71,13 @@ app:
     superuser:
       username: admin
       password: qwerty123
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 

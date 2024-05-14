@@ -23,7 +23,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("badge")
-@RateLimiter(name = "badgeLimit")
 public class BadgeController {
     private final DeskRepositoryImpl<SseEmitter> deskRepository;
     private final BadgePrepareUseCase badgePrepareUseCase;

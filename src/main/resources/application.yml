@@ -38,6 +38,8 @@ resilience4j:
         slowCallDurationThreshold: 2s
     metrics:
       enabled: true
+      legacy:
+        enabled: true
   retry:
     instances:
       coreRetry:
@@ -50,17 +52,19 @@ resilience4j:
           - java.lang.Throwable
     metrics:
       enabled: true
+      legacy:
+        enabled: true
 
   ratelimiter:
     metrics:
       enabled: true
-    instances:
-      badgeLimit:
-        limit-for-period: 20
-        limit-refresh-period:
-          seconds: 5
-        timeout-duration:
-          seconds: 5
+      legacy:
+        enabled: true
+    configs:
+      default:
+        limitForPeriod: 1
+        limitRefreshPeriod: 1s
+
 
 
 springdoc:
@@ -86,4 +90,12 @@ management:
     metrics:
       export:
         enabled: true
+  health:
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true
+  endpoint:
+    ratelimiters:
+      enabled: true
 

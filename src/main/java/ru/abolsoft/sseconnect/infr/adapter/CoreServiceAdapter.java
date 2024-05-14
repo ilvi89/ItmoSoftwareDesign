@@ -5,11 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.f4b6a3.uuid.UuidCreator;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.*;
 import okhttp3.*;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.abolsoft.sseconnect.core.entity.Badge;
 import ru.abolsoft.sseconnect.core.entity.BadgePreset;
@@ -105,7 +107,10 @@ public class CoreServiceAdapter implements CoreServicePort {
 
     @Override
     @Retry(name = "coreRetry")
+    @RateLimiter(name = "badge")
+    @Cacheable(value = "badgeData", key = "#badgeId")
     public Optional<BadgeData> getBadgeDataById(Long badgeId) {
+
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         Request request = new Request.Builder()
@@ -169,6 +174,7 @@ public class CoreServiceAdapter implements CoreServicePort {
             throw new RuntimeException(e);
         }
     }
+
 }
 
 @Data

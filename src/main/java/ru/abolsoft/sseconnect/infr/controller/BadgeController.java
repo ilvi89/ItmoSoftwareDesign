@@ -1,5 +1,6 @@
 package ru.abolsoft.sseconnect.infr.controller;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("badge")
+@RateLimiter(name = "badgeLimit")
 public class BadgeController {
     private final DeskRepositoryImpl<SseEmitter> deskRepository;
     private final BadgePrepareUseCase badgePrepareUseCase;

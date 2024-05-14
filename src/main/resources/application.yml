@@ -5,17 +5,12 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
 
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/db
-    username: admin
-    password: admin
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/db
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/db
     password: admin
     username: admin
   liquibase:
-    url: jdbc:postgresql://localhost:5432/db
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/db
     user: admin
     password: admin
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -24,9 +19,10 @@ spring:
     hibernate:
       ddl-auto: none
 
-  redis:
-    host: localhost
-    port: 6379
+  data:
+    redis:
+      host: "${CACHE_HOST:localhost}"
+      port: 6379
 
 resilience4j:
   circuitbreaker:
@@ -40,6 +36,8 @@ resilience4j:
         failureRateThreshold: 50
         slowCallRateThreshold: 100
         slowCallDurationThreshold: 2s
+    metrics:
+      enabled: true
   retry:
     instances:
       coreRetry:
@@ -52,6 +50,17 @@ resilience4j:
           - java.lang.Throwable
     metrics:
       enabled: true
+
+  ratelimiter:
+    metrics:
+      enabled: true
+    instances:
+      badgeLimit:
+        limit-for-period: 20
+        limit-refresh-period:
+          seconds: 5
+        timeout-duration:
+          seconds: 5
 
 
 springdoc:

@@ -30,8 +30,8 @@ spring:
 
 resilience4j:
   circuitbreaker:
-    configs:
-      myCircuitBreakerConfig:
+    instances:
+      coreCircuitBreaker:
         registerHealthIndicator: true
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
@@ -40,9 +40,6 @@ resilience4j:
         failureRateThreshold: 50
         slowCallRateThreshold: 100
         slowCallDurationThreshold: 2s
-    instances:
-      coreCircuitBreaker:
-        baseConfig: myCircuitBreakerConfig
   retry:
     instances:
       coreRetry:
